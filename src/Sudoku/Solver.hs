@@ -1,6 +1,7 @@
 module Sudoku.Solver (solve) where
 
-import Control.Monad.Logic (Logic, guard, observe)
+import Control.Monad (guard)
+import Control.Monad.Logic (Logic, observe)
 import Data.Foldable (asum)
 import Data.List ((\\))
 import Data.List.Extra (nubOrd)

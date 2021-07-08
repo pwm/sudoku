@@ -12,7 +12,7 @@ main = do
       [fn] -> (,fn) <$> readFile fn
       _ -> do
         pn <- getProgName
-        failWith $ "Usage: " <> pn <> " <puzzle>"
+        failWith $ "Usage: " <> pn <> " <puzzle file>"
   case parse puzzleFile of
     Nothing -> failWith $ "Invalid puzzle file " <> fn
     Just puzzle -> putStrLn $ pp (solve puzzle)
