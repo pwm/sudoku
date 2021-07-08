@@ -15,7 +15,7 @@ main = do
         failWith $ "Usage: " <> pn <> " <puzzle>"
   case parse puzzleFile of
     Nothing -> failWith $ "Invalid puzzle file " <> fn
-    Just puzzle -> pp $ solve puzzle
+    Just puzzle -> putStrLn $ pp (solve puzzle)
 
 failWith :: String -> (forall a. IO a)
 failWith s = putStrLn s >> exitFailure
