@@ -1,7 +1,7 @@
 module Sudoku.Parser (parse) where
 
 import qualified Data.Map.Strict as Map
-import Sudoku.Types
+import Sudoku.Types (Grid, Matrix, Pos)
 import Prelude
 
 parse :: String -> Maybe Grid

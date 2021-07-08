@@ -6,7 +6,7 @@ import Data.List ((\\))
 import Data.List.Extra (nubOrd)
 import Data.Map.Strict ((!))
 import qualified Data.Map.Strict as Map
-import Sudoku.Types
+import Sudoku.Types (Grid, Pos)
 import Prelude
 
 solve :: Grid -> Grid
@@ -25,9 +25,9 @@ rules :: Grid -> Bool
 rules g = validate rows && validate cols && validate boxes
   where
     validate :: [[Pos]] -> Bool
-    validate = and . fmap (valid . valsAt g)
-    valid :: [Int] -> Bool
-    valid xs = 0 `elem` xs || length xs == length (nubOrd xs)
+    validate = and . fmap (valsValid . valsAt g)
+    valsValid :: [Int] -> Bool
+    valsValid vs = 0 `elem` vs || length vs == length (nubOrd vs)
 
 done :: Grid -> Bool
 done = Map.null . Map.filter (== 0)
@@ -36,11 +36,11 @@ choose :: [a] -> Logic a
 choose = asum . fmap pure
 
 choices :: Grid -> [Int]
-choices g =
-  [1 .. 9] \\ (vals (rowOf p) <> vals (colOf p) <> vals (boxOf p))
+choices g = [1 .. 9] \\ (rowVals <> colVals <> boxVals)
   where
-    vals = valsAt g
-    p = nextHole g
+    rowVals = valsAt g (rowOf (nextHole g))
+    colVals = valsAt g (colOf (nextHole g))
+    boxVals = valsAt g (boxOf (nextHole g))
 
 addChoice :: Grid -> Int -> Grid
 addChoice g c = Map.insert (nextHole g) c g
