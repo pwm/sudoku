@@ -10,16 +10,16 @@ import Sudoku.Types
 import Prelude
 
 solve :: Grid -> Grid
-solve = observe . solver
+solve = observe . go
   where
-    solver :: Grid -> Logic Grid
-    solver g = do
+    go :: Grid -> Logic Grid
+    go g = do
       guard (rules g)
       if done g
         then pure g
         else do
           c <- choose (choices g)
-          solver (addChoice g c)
+          go (addChoice g c)
 
 rules :: Grid -> Bool
 rules g = validate rows && validate cols && validate boxes
@@ -27,9 +27,7 @@ rules g = validate rows && validate cols && validate boxes
     validate :: [[Pos]] -> Bool
     validate = and . fmap (valid . valsAt g)
     valid :: [Int] -> Bool
-    valid xs
-      | 0 `elem` xs = True
-      | otherwise = length xs == length (nubOrd xs)
+    valid xs = 0 `elem` xs || length xs == length (nubOrd xs)
 
 done :: Grid -> Bool
 done = Map.null . Map.filter (== 0)
@@ -38,10 +36,11 @@ choose :: [a] -> Logic a
 choose = asum . fmap pure
 
 choices :: Grid -> [Int]
-choices g = [1 .. 9] \\ (vals (rowOf p) <> vals (colOf p) <> vals (boxOf p))
+choices g =
+  [1 .. 9] \\ (vals (rowOf p) <> vals (colOf p) <> vals (boxOf p))
   where
-    p = nextHole g
     vals = valsAt g
+    p = nextHole g
 
 addChoice :: Grid -> Int -> Grid
 addChoice g c = Map.insert (nextHole g) c g
