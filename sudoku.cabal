@@ -13,7 +13,10 @@ build-type:     Simple
 library
   exposed-modules:
       Sudoku
+      Sudoku.Parser
+      Sudoku.PP
       Sudoku.Solver
+      Sudoku.Types
   other-modules:
       Paths_sudoku
   hs-source-dirs:
@@ -41,14 +44,15 @@ library
       NumericUnderscores
       LambdaCase
       OverloadedStrings
+      RankNTypes
       ScopedTypeVariables
       StandaloneDeriving
+      StrictData
       TupleSections
       TypeApplications
   ghc-options: -Weverything -Wno-missing-exported-signatures -Wno-missing-import-lists -Wno-missed-specialisations -Wno-all-missed-specialisations -Wno-unsafe -Wno-safe -Wno-missing-local-signatures -Wno-monomorphism-restriction -Wno-missing-export-lists -Wno-missing-home-modules -Wno-missing-safe-haskell-mode -Wno-prepositive-qualified-module -Wno-unused-packages -Wno-implicit-prelude
   build-depends:
       base >=4.7 && <5
-    , bytestring
     , containers
     , extra
     , logict
@@ -84,14 +88,15 @@ executable sudoku
       NumericUnderscores
       LambdaCase
       OverloadedStrings
+      RankNTypes
       ScopedTypeVariables
       StandaloneDeriving
+      StrictData
       TupleSections
       TypeApplications
   ghc-options: -Weverything -Wno-missing-exported-signatures -Wno-missing-import-lists -Wno-missed-specialisations -Wno-all-missed-specialisations -Wno-unsafe -Wno-safe -Wno-missing-local-signatures -Wno-monomorphism-restriction -Wno-missing-export-lists -Wno-missing-home-modules -Wno-missing-safe-haskell-mode -Wno-prepositive-qualified-module -Wno-unused-packages -Wno-implicit-prelude -threaded -rtsopts -with-rtsopts=-N
   build-depends:
       base >=4.7 && <5
-    , bytestring
     , containers
     , extra
     , logict
@@ -129,14 +134,15 @@ test-suite spec
       NumericUnderscores
       LambdaCase
       OverloadedStrings
+      RankNTypes
       ScopedTypeVariables
       StandaloneDeriving
+      StrictData
       TupleSections
       TypeApplications
   ghc-options: -Weverything -Wno-missing-exported-signatures -Wno-missing-import-lists -Wno-missed-specialisations -Wno-all-missed-specialisations -Wno-unsafe -Wno-safe -Wno-missing-local-signatures -Wno-monomorphism-restriction -Wno-missing-export-lists -Wno-missing-home-modules -Wno-missing-safe-haskell-mode -Wno-prepositive-qualified-module -Wno-unused-packages -Wno-implicit-prelude -threaded -rtsopts -with-rtsopts=-N
   build-depends:
       base >=4.7 && <5
-    , bytestring
     , containers
     , extra
     , hspec

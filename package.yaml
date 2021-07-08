@@ -59,8 +59,10 @@ default-extensions:
   - NumericUnderscores
   - LambdaCase
   - OverloadedStrings
+  - RankNTypes
   - ScopedTypeVariables
   - StandaloneDeriving
+  - StrictData
   - TupleSections
   - TypeApplications
 

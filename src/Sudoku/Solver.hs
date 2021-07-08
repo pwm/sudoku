@@ -1,36 +1,25 @@
-module Sudoku.Solver
-  ( parse,
-    solveSudoku,
-    pp,
-  )
-where
+module Sudoku.Solver (solve) where
 
 import Control.Monad.Logic (Logic, guard, observe)
 import Data.Foldable (asum)
-import Data.List (foldl', (\\))
+import Data.List ((\\))
 import Data.List.Extra (nubOrd)
-import Data.List.Split (chunksOf)
-import Data.Map.Strict (Map, (!))
+import Data.Map.Strict ((!))
 import qualified Data.Map.Strict as Map
+import Sudoku.Types
 import Prelude
 
-type Matrix = [[Int]]
-
-type Pos = (Int, Int)
-
-type Grid = Map Pos Int
-
-solveSudoku :: Matrix -> Matrix
-solveSudoku = toMatrix . observe . solve . toGrid
+solve :: Grid -> Grid
+solve = observe . solver
   where
-    solve :: Grid -> Logic Grid
-    solve g = do
+    solver :: Grid -> Logic Grid
+    solver g = do
       guard (rules g)
       if done g
         then pure g
         else do
           c <- choose (choices g)
-          solve (addChoice g c)
+          solver (addChoice g c)
 
 rules :: Grid -> Bool
 rules g = validate rows && validate cols && validate boxes
@@ -74,32 +63,3 @@ boxOf (i, j) = [(i + x, j + y) | x <- relTo i, y <- relTo j]
 
 valsAt :: Grid -> [Pos] -> [Int]
 valsAt g = fmap (g !)
-
--- Parse/Transform
-
-parse :: String -> Maybe Matrix
-parse = traverse stringToDigits . lines
-  where
-    stringToDigits :: String -> Maybe [Int]
-    stringToDigits s =
-      let xs = concatMap (fmap fst . (\c -> reads [c])) s
-       in if length xs == length s then Just xs else Nothing
-
-toGrid :: Matrix -> Grid
-toGrid = Map.fromList . concatMap rowToPos . index
-  where
-    index :: Matrix -> [(Int, [(Int, Int)])]
-    index = zip [0 ..] . fmap (zip [0 ..])
-    rowToPos :: (Int, [(Int, Int)]) -> [(Pos, Int)]
-    rowToPos (i, xs) = let (js, vs) = unzip xs in zip (zip (replicate 9 i) js) vs
-
-toMatrix :: Grid -> Matrix
-toMatrix = chunksOf 9 . Map.elems
-
--- Pretty Print
-
-pp :: Matrix -> IO ()
-pp = putStrLn . drawMatrix
-
-drawMatrix :: Matrix -> String
-drawMatrix = foldl' (\s xs -> foldl' (\s' v -> s' <> show v) s xs <> "\n") ""

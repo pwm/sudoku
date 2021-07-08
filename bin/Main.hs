@@ -1,6 +1,6 @@
 module Main where
 
-import Sudoku.Solver
+import Sudoku
 import System.Environment (getArgs, getProgName)
 import System.Exit (exitFailure)
 import Prelude
@@ -9,14 +9,13 @@ main :: IO ()
 main = do
   (puzzleFile, fn) <-
     getArgs >>= \case
-      [] -> do
+      [fn] -> (,fn) <$> readFile fn
+      _ -> do
         pn <- getProgName
-        putStrLn $ "Usage: " <> pn <> " <puzzle>"
-        putStrLn $ "  eg.: " <> pn <> " puzzles/0.txt"
-        exitFailure
-      (fn : _) -> (,fn) <$> readFile fn
+        failWith $ "Usage: " <> pn <> " <puzzle>"
   case parse puzzleFile of
-    Nothing -> do
-      putStrLn $ fn <> " is not a valid sudoku puzzle file."
-      exitFailure
-    Just puzzle -> pp $ solveSudoku puzzle
+    Nothing -> failWith $ "Invalid puzzle file " <> fn
+    Just puzzle -> pp $ solve puzzle
+
+failWith :: String -> (forall a. IO a)
+failWith s = putStrLn s >> exitFailure
