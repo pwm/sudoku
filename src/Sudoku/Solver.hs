@@ -1,6 +1,6 @@
 module Sudoku.Solver
-  ( solve,
-    parse,
+  ( parse,
+    solveSudoku,
     pp,
   )
 where
@@ -20,17 +20,17 @@ type Pos = (Int, Int)
 
 type Grid = Map Pos Int
 
-solve :: Matrix -> Matrix
-solve = toMatrix . observe . solveSudoku . toGrid
+solveSudoku :: Matrix -> Matrix
+solveSudoku = toMatrix . observe . solve . toGrid
   where
-    solveSudoku :: Grid -> Logic Grid
-    solveSudoku g = do
+    solve :: Grid -> Logic Grid
+    solve g = do
       guard (rules g)
       if done g
         then pure g
         else do
           c <- choose (choices g)
-          solveSudoku (addChoice g c)
+          solve (addChoice g c)
 
 rules :: Grid -> Bool
 rules g = validate rows && validate cols && validate boxes

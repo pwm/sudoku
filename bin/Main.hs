@@ -19,4 +19,4 @@ main = do
     Nothing -> do
       putStrLn $ fn <> " is not a valid sudoku puzzle file."
       exitFailure
-    Just puzzle -> pp $ solve puzzle
+    Just puzzle -> pp $ solveSudoku puzzle
