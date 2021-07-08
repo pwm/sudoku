@@ -1,0 +1,5 @@
+# Usage of the 'length' function that hangs on infinite lists
+[[check]]
+type = "Exclude"
+scope = "all"
+id = "STAN-0103"

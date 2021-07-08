@@ -1,0 +1,3 @@
+- modules:
+    - { name: [Data.Map.Strict], as: Map }
+    - { name: [Data.ByteString.Char8], as: BS }
