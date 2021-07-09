@@ -10,9 +10,7 @@ main = do
   (puzzleFile, fn) <-
     getArgs >>= \case
       [fn] -> (,fn) <$> readFile fn
-      _ -> do
-        pn <- getProgName
-        die $ "Usage: " <> pn <> " <puzzle file>"
+      _ -> getProgName >>= \pn -> die $ "Usage: " <> pn <> " <file>"
   case parse puzzleFile of
     Nothing -> die $ "Invalid puzzle file " <> fn
     Just puzzle -> putStrLn $ pp (solve puzzle)
