@@ -108,6 +108,7 @@ test-suite spec
   type: exitcode-stdio-1.0
   main-is: Spec.hs
   other-modules:
+      Sudoku.SolverSpec
       Paths_sudoku
   hs-source-dirs:
       test
@@ -144,7 +145,9 @@ test-suite spec
   build-depends:
       base >=4.7 && <5
     , containers
+    , directory
     , extra
+    , filepath
     , hspec
     , logict
     , split

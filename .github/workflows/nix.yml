@@ -63,4 +63,4 @@ jobs:
 
       - name: Run
         run: |
-          nix-shell --run "run puzzles/0.txt"
+          nix-shell --run "run test/golden/puzzles/1.txt"
