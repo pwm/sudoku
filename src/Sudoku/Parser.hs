@@ -1,4 +1,4 @@
-module Sudoku.Parser (parse) where
+module Sudoku.Parser where
 
 import qualified Data.Map.Strict as Map
 import Sudoku.Types (Grid, Matrix, Pos)

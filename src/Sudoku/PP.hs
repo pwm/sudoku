@@ -1,4 +1,4 @@
-module Sudoku.PP (pp) where
+module Sudoku.PP where
 
 import Data.List (foldl')
 import Data.List.Split (chunksOf)

@@ -1,5 +1,6 @@
-module Sudoku.Solver (solve) where
+module Sudoku.Solver where
 
+import Control.Applicative (liftA2)
 import Control.Monad (guard)
 import Control.Monad.Logic (Logic, observe)
 import Data.Foldable (asum)
@@ -50,9 +51,9 @@ nextHole :: Grid -> Pos
 nextHole = fst . Map.findMin . Map.filter (== 0)
 
 rows, cols, boxes :: [[Pos]]
-rows = rowOf <$> zip [0 .. 8] [0 .. 8]
-cols = colOf <$> zip [0 .. 8] [0 .. 8]
-boxes = boxOf <$> zip [0 .. 8] [0 .. 8]
+rows = rowOf <$> zip [0 .. 8] [0 ..]
+cols = colOf <$> zip [0 ..] [0 .. 8]
+boxes = boxOf <$> liftA2 (,) [0, 3, 6] [0, 3, 6]
 
 rowOf, colOf, boxOf :: Pos -> [Pos]
 rowOf (i, _) = [(i, y) | y <- [0 .. 8]]
