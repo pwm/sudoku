@@ -1,7 +1,8 @@
 module Sudoku.Parser where
 
+import Data.Bifunctor
 import qualified Data.Map.Strict as Map
-import Sudoku.Types (Grid, Matrix, Pos)
+import Sudoku.Types (Grid, Matrix)
 import Prelude
 
 parse :: String -> Maybe Grid
@@ -13,9 +14,8 @@ stringToDigits s =
    in if length xs == length s then Just xs else Nothing
 
 matrixToGrid :: Matrix -> Grid
-matrixToGrid = Map.fromList . concatMap rowToPos . index
-  where
-    index :: Matrix -> [(Int, [(Int, Int)])]
-    index = zip [0 ..] . fmap (zip [0 ..])
-    rowToPos :: (Int, [(Int, Int)]) -> [(Pos, Int)]
-    rowToPos (i, xs) = let (js, vs) = unzip xs in zip (zip (replicate 9 i) js) vs
+matrixToGrid =
+  Map.fromList
+    . concatMap (\(x, l) -> fmap (first (x,)) l)
+    . zip [0 ..]
+    . fmap (zip [0 ..])
