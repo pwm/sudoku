@@ -2,7 +2,7 @@ module Main where
 
 import Sudoku
 import System.Environment (getArgs, getProgName)
-import System.Exit (exitFailure)
+import System.Exit (die)
 import Prelude
 
 main :: IO ()
@@ -12,10 +12,7 @@ main = do
       [fn] -> (,fn) <$> readFile fn
       _ -> do
         pn <- getProgName
-        failWith $ "Usage: " <> pn <> " <puzzle file>"
+        die $ "Usage: " <> pn <> " <puzzle file>"
   case parse puzzleFile of
-    Nothing -> failWith $ "Invalid puzzle file " <> fn
+    Nothing -> die $ "Invalid puzzle file " <> fn
     Just puzzle -> putStrLn $ pp (solve puzzle)
-
-failWith :: String -> (forall a. IO a)
-failWith s = putStrLn s >> exitFailure
