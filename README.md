@@ -4,12 +4,9 @@
 
 A simple Sudoku solver using [LogicT](https://hackage.haskell.org/package/logict).
 
-Build:
+Build / run / test:
 ```
 cabal build
-```
-
-Run:
-```
-cabal run sudoku -- puzzles/0.txt
+cabal run sudoku test/golden/puzzles/1.txt
+cabal test --test-show-details=direct
 ```
