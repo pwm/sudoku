@@ -58,9 +58,11 @@ boxes = boxOf <$> liftA2 (,) [0, 3, 6] [0, 3, 6]
 rowOf, colOf, boxOf :: Pos -> [Pos]
 rowOf (i, _) = [(i, y) | y <- [0 .. 8]]
 colOf (_, j) = [(x, j) | x <- [0 .. 8]]
-boxOf (i, j) = [(i + x, j + y) | x <- relTo i, y <- relTo j]
-  where
-    relTo a = subtract (a `rem` 3) <$> [0, 1, 2]
+boxOf (i, j) =
+  [ (i - (i `rem` 3) + x, j - (j `rem` 3) + y)
+    | x <- [0, 1, 2],
+      y <- [0, 1, 2]
+  ]
 
 valsAt :: Grid -> [Pos] -> [Int]
 valsAt grid = fmap (grid !)
