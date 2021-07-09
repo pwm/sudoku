@@ -14,19 +14,19 @@ solve :: Grid -> Grid
 solve = observe . go
   where
     go :: Grid -> Logic Grid
-    go g = do
-      guard (rules g)
-      if done g
-        then pure g
+    go grid = do
+      guard (rules grid)
+      if done grid
+        then pure grid
         else do
-          c <- choose (choices g)
-          go (addChoice g c)
+          choice <- choose (candidates grid)
+          go (addChoice grid choice)
 
 rules :: Grid -> Bool
-rules g = validate rows && validate cols && validate boxes
+rules grid = validate rows && validate cols && validate boxes
   where
     validate :: [[Pos]] -> Bool
-    validate = and . fmap (valsValid . valsAt g)
+    validate = and . fmap (valsValid . valsAt grid)
     valsValid :: [Int] -> Bool
     valsValid vs = 0 `elem` vs || length vs == length (nubOrd vs)
 
@@ -36,15 +36,15 @@ done = Map.null . Map.filter (== 0)
 choose :: [a] -> Logic a
 choose = asum . fmap pure
 
-choices :: Grid -> [Int]
-choices g = [1 .. 9] \\ (rowVals <> colVals <> boxVals)
+candidates :: Grid -> [Int]
+candidates grid = [1 .. 9] \\ (rowVals <> colVals <> boxVals)
   where
-    rowVals = valsAt g (rowOf (nextHole g))
-    colVals = valsAt g (colOf (nextHole g))
-    boxVals = valsAt g (boxOf (nextHole g))
+    rowVals = valsAt grid (rowOf (nextHole grid))
+    colVals = valsAt grid (colOf (nextHole grid))
+    boxVals = valsAt grid (boxOf (nextHole grid))
 
 addChoice :: Grid -> Int -> Grid
-addChoice g c = Map.insert (nextHole g) c g
+addChoice grid v = Map.insert (nextHole grid) v grid
 
 nextHole :: Grid -> Pos
 nextHole = fst . Map.findMin . Map.filter (== 0)
@@ -62,4 +62,4 @@ boxOf (i, j) = [(i + x, j + y) | x <- relTo i, y <- relTo j]
     relTo a = subtract (a `rem` 3) <$> [0, 1, 2]
 
 valsAt :: Grid -> [Pos] -> [Int]
-valsAt g = fmap (g !)
+valsAt grid = fmap (grid !)
