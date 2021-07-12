@@ -21,7 +21,7 @@ solve = observe . go
         then pure grid
         else do
           choice <- choose (candidates grid)
-          go (addChoice grid choice)
+          go (add choice grid)
 
 rules :: Grid -> Bool
 rules grid = validate rows && validate cols && validate boxes
@@ -44,8 +44,8 @@ candidates grid = [1 .. 9] \\ (rowVals <> colVals <> boxVals)
     colVals = valsAt grid (colOf (nextHole grid))
     boxVals = valsAt grid (boxOf (nextHole grid))
 
-addChoice :: Grid -> Int -> Grid
-addChoice grid v = Map.insert (nextHole grid) v grid
+add :: Int -> Grid -> Grid
+add v grid = Map.insert (nextHole grid) v grid
 
 nextHole :: Grid -> Pos
 nextHole = fst . Map.findMin . Map.filter (== 0)
