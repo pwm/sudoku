@@ -1,8 +1,8 @@
 module Sudoku.Solver where
 
-import Control.Applicative (liftA2)
+import Control.Applicative (Alternative)
 import Control.Monad (guard)
-import Control.Monad.Logic (Logic, observe)
+import Control.Monad.Logic (observe)
 import Data.Foldable (asum)
 import Data.List ((\\))
 import Data.List.Extra (nubOrd)
@@ -12,48 +12,45 @@ import Sudoku.Types (Grid, Pos)
 import Prelude
 
 solve :: Grid -> Grid
-solve = observe . go
+solve = observe . go (0, 0)
   where
-    go :: Grid -> Logic Grid
-    go grid = do
-      guard (rules grid)
+    go :: (Monad m, Alternative m) => Pos -> Grid -> m Grid
+    go curPos grid = do
+      guard (rules grid curPos)
       if done grid
         then pure grid
         else do
-          choice <- choose (candidates grid)
-          go (add choice grid)
+          let nextPos = nextHole grid
+          choice <- choose (candidates grid nextPos)
+          go nextPos (Map.insert nextPos choice grid)
 
-rules :: Grid -> Bool
-rules grid = validate rows && validate cols && validate boxes
+rules :: Grid -> Pos -> Bool
+rules grid pos =
+  valid (rowOf pos) && valid (colOf pos) && valid (boxOf pos)
   where
-    validate :: [[Pos]] -> Bool
-    validate = and . fmap (valsValid . valsAt grid)
+    valid :: [Pos] -> Bool
+    valid = valsValid . valsAt grid
     valsValid :: [Int] -> Bool
-    valsValid vs = 0 `elem` vs || length vs == length (nubOrd vs)
+    valsValid vs = 0 `elem` vs || 9 == length (nubOrd vs)
 
 done :: Grid -> Bool
 done = Map.null . Map.filter (== 0)
 
-choose :: [a] -> Logic a
-choose = asum . fmap pure
-
-candidates :: Grid -> [Int]
-candidates grid = [1 .. 9] \\ (rowVals <> colVals <> boxVals)
-  where
-    rowVals = valsAt grid (rowOf (nextHole grid))
-    colVals = valsAt grid (colOf (nextHole grid))
-    boxVals = valsAt grid (boxOf (nextHole grid))
-
-add :: Int -> Grid -> Grid
-add v grid = Map.insert (nextHole grid) v grid
-
 nextHole :: Grid -> Pos
 nextHole = fst . Map.findMin . Map.filter (== 0)
 
-rows, cols, boxes :: [[Pos]]
-rows = rowOf <$> zip [0 .. 8] [0 ..]
-cols = colOf <$> zip [0 ..] [0 .. 8]
-boxes = boxOf <$> liftA2 (,) [0, 3, 6] [0, 3, 6]
+candidates :: Grid -> Pos -> [Int]
+candidates grid pos = [1 .. 9] \\ (rowVals <> colVals <> boxVals)
+  where
+    rowVals = valsAt grid (rowOf pos)
+    colVals = valsAt grid (colOf pos)
+    boxVals = valsAt grid (boxOf pos)
+
+valsAt :: Grid -> [Pos] -> [Int]
+valsAt grid = fmap (grid !)
+
+choose :: Alternative m => [a] -> m a
+choose = asum . fmap pure
 
 rowOf, colOf, boxOf :: Pos -> [Pos]
 rowOf (i, _) = [(i, y) | y <- [0 .. 8]]
@@ -63,6 +60,3 @@ boxOf (i, j) =
     | x <- [0, 1, 2],
       y <- [0, 1, 2]
   ]
-
-valsAt :: Grid -> [Pos] -> [Int]
-valsAt grid = fmap (grid !)
