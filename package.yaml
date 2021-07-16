@@ -18,6 +18,7 @@ executables:
       - -threaded
       - -rtsopts
       - -with-rtsopts=-N
+      - -with-rtsopts=-A128M
     dependencies:
       - sudoku
 
@@ -65,6 +66,9 @@ default-extensions:
   - TypeApplications
 
 ghc-options:
+  - -O2
+  - -funbox-strict-fields
+  - -fstatic-argument-transformation
   - -Weverything
   - -Wno-missing-exported-signatures # missing-exported-signatures turns off the more strict -Wmissing-signatures.
   - -Wno-missing-import-lists # Requires explicit imports of _every_ function (e.g. ‘$’); too strict
