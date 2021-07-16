@@ -1,12 +1,13 @@
 module Sudoku.Parser where
 
-import Data.Bifunctor
+import Data.Bifunctor (first)
+import Data.List.Split (chunksOf)
 import qualified Data.Map.Strict as Map
 import Sudoku.Types (Grid, Matrix)
 import Prelude
 
 parse :: String -> Maybe Grid
-parse = fmap matrixToGrid . traverse stringToDigits . lines
+parse = fmap matrixToGrid . traverse stringToDigits . take 9 . chunksOf 9
 
 stringToDigits :: String -> Maybe [Int]
 stringToDigits s =

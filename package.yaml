@@ -4,7 +4,6 @@ version: 0.1.0.0
 dependencies:
   - base >= 4.7 && < 5
   - containers
-  - extra
   - logict
   - split
 
@@ -31,8 +30,6 @@ tests:
       - -rtsopts
       - -with-rtsopts=-N
     dependencies:
-      - directory
-      - filepath
       - hspec
       - sudoku
     verbatim:
@@ -64,7 +61,6 @@ default-extensions:
   - RankNTypes
   - ScopedTypeVariables
   - StandaloneDeriving
-  - StrictData
   - TupleSections
   - TypeApplications
 
