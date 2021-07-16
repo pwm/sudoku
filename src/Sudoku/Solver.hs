@@ -1,37 +1,24 @@
 module Sudoku.Solver where
 
 import Control.Applicative (Alternative)
-import Control.Monad (guard)
 import Control.Monad.Logic (observe)
 import Data.Foldable (asum)
 import Data.List ((\\))
-import Data.List.Extra (nubOrd)
 import Data.Map.Strict ((!))
 import qualified Data.Map.Strict as Map
 import Sudoku.Types (Grid, Pos)
 import Prelude
 
 solve :: Grid -> Grid
-solve = observe . go (0, 0)
+solve = observe . go
   where
-    go :: (Monad m, Alternative m) => Pos -> Grid -> m Grid
-    go curPos grid = do
-      guard (rules grid curPos)
-      if done grid
-        then pure grid
-        else do
-          let nextPos = nextHole grid
-          choice <- choose (candidates grid nextPos)
-          go nextPos (Map.insert nextPos choice grid)
-
-rules :: Grid -> Pos -> Bool
-rules grid pos =
-  valid (rowOf pos) && valid (colOf pos) && valid (boxOf pos)
-  where
-    valid :: [Pos] -> Bool
-    valid = valsValid . valsAt grid
-    valsValid :: [Int] -> Bool
-    valsValid vs = 0 `elem` vs || 9 == length (nubOrd vs)
+    go :: (Monad m, Alternative m) => Grid -> m Grid
+    go grid
+      | done grid = pure grid
+      | otherwise = do
+        let nextPos = nextHole grid
+        choice <- choose (candidates grid nextPos)
+        go (Map.insert nextPos choice grid)
 
 done :: Grid -> Bool
 done = Map.null . Map.filter (== 0)
@@ -42,14 +29,11 @@ nextHole = fst . Map.findMin . Map.filter (== 0)
 candidates :: Grid -> Pos -> [Int]
 candidates grid pos = [1 .. 9] \\ (rowVals <> colVals <> boxVals)
   where
-    rowVals = valsAt grid (rowOf pos)
-    colVals = valsAt grid (colOf pos)
-    boxVals = valsAt grid (boxOf pos)
+    rowVals = (grid !) <$> rowOf pos
+    colVals = (grid !) <$> colOf pos
+    boxVals = (grid !) <$> boxOf pos
 
-valsAt :: Grid -> [Pos] -> [Int]
-valsAt grid = fmap (grid !)
-
-choose :: Alternative m => [a] -> m a
+choose :: (Traversable t, Alternative m) => t a -> m a
 choose = asum . fmap pure
 
 rowOf, colOf, boxOf :: Pos -> [Pos]
